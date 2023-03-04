@@ -16,6 +16,9 @@ class FaqItemController extends Controller
     public function index(Request $request)
     {
         $faqitem = FaqItem::query();
+        if ($request->only('search') && $request->only('col')) {
+            $faqitem = $faqitem->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
         if ($request->only('sort')){
             $faqitem = $faqitem->orderBy($request->get('sort'), $request->get('dir'));
         }else{

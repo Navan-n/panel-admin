@@ -16,20 +16,17 @@ class PostCommentController extends Controller
     public function index(Request $request)
     {
         $comments = Comment::query();
+        if ($request->only('search') && $request->only('col')){
+            $comments = $comments->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
         if ($request->only('sort')) {
             $comments = $comments->orderBy($request->get('sort'), $request->get('dir'));
-        } else if ($request->only('search')) {
-            $comment = Comment::query();
-            $comment = $comment->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
-            $comment = $comment->paginate(15);
-            return response()->json($comment, 200);
-        } else {
+        }else {
             $comments = $comments->orderBy('id', 'ASC');
         }
         $comments = $comments->paginate(15);
         return response()->json($comments, 200);
     }
-
     public function store(StorePostCommentRequest $request)
     {
 

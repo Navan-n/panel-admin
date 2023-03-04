@@ -14,9 +14,12 @@ class BannerController extends Controller
     public function index(Request $request)
     {
         $banner = Banner::query();
-        if($request->only('sort')){
+        if ($request->only('search') && $request->only('col')) {
+            $banner = $banner->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
+        if ($request->only('sort')) {
             $banner = $banner->orderBy($request->get('sort'), $request->get('dir'));
-        }else{
+        } else {
             $banner = $banner->orderBy('id', 'ASC');
         }
         $banner = $banner->paginate(15);
@@ -38,48 +41,50 @@ class BannerController extends Controller
 
         } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
     }
+
     public function show($id)
     {
         $banner = Banner::find($id);
         try {
-            if (!$banner==null) {
+            if (!$banner == null) {
                 $response = [
                     'success' => true,
                     'data' => new BannerResource($banner),
                     'message' => 'pedram success',
                 ];
                 return response()->json($response, 200);
-            }else{
+            } else {
                 $response = [
                     'success' => false,
                     'message' => "not found",
                 ];
                 return response()->json($response, 401);
             }
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
     }
+
     public function update(StoreBannerRequest $request, Banner $banner)
     {
         $input = $request->all();
@@ -103,20 +108,21 @@ class BannerController extends Controller
                 'message' => 'banner update success',
             ];
             return response()->json($response, 200);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
 
     }
+
     public function destroy(Banner $banner)
     {
         $banner->delete();
@@ -127,15 +133,15 @@ class BannerController extends Controller
                 'message' => 'delete success',
             ];
             return response()->json($response, 200);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }

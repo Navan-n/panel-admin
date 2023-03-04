@@ -16,13 +16,16 @@ class SliderController extends Controller
     public function index(Request $request)
     {
         $slider = Slider::query();
-        if($request->only('sort')) {
-            $slider =  $slider->orderBy($request->get('sort'), $request->get('dir'));
-        }else   {
-            $slider = $slider->orderBy('id' , 'ASC');
+        if ($request->only('search') && $request->only('col')) {
+            $slider = $slider->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
+        if ($request->only('sort')) {
+            $slider = $slider->orderBy($request->get('sort'), $request->get('dir'));
+        } else {
+            $slider = $slider->orderBy('id', 'ASC');
         }
         $slider = $slider->paginate(15);
-        return response()->json($slider , 200);
+        return response()->json($slider, 200);
     }
 
     public function store(StoreSliderRequrst $request)
@@ -30,25 +33,25 @@ class SliderController extends Controller
         $input = $request->all();
 
         try {
-                $input['createdBy'] = $request->user()->id;
-                $slider = Slider::create($input);
-                $response = [
-                    'success' => true,
-                    'data' => new SliderResource($slider),
-                    'message' => 'slider success',
-                ];
+            $input['createdBy'] = $request->user()->id;
+            $slider = Slider::create($input);
+            $response = [
+                'success' => true,
+                'data' => new SliderResource($slider),
+                'message' => 'slider success',
+            ];
 
-                return response()->json($response, 200);
+            return response()->json($response, 200);
 
         } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
@@ -59,33 +62,34 @@ class SliderController extends Controller
     {
         $slider = Slider::find($id);
         try {
-            if (!$slider==null) {
+            if (!$slider == null) {
                 $response = [
                     'success' => true,
                     'data' => new SliderResource($slider),
                     'message' => 'pedram success',
                 ];
                 return response()->json($response, 200);
-            }else{
+            } else {
                 $response = [
                     'success' => false,
                     'message' => "not found",
                 ];
                 return response()->json($response, 401);
             }
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
     }
+
     public function update(StoreSliderRequrst $request, Slider $slider)
     {
         $input = $request->all();
@@ -106,19 +110,20 @@ class SliderController extends Controller
                 'message' => 'slider success',
             ];
             return response()->json($response, 200);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
     }
+
     public function destroy(Slider $slider)
     {
         $slider->delete();
@@ -129,15 +134,15 @@ class SliderController extends Controller
                 'message' => 'delete success',
             ];
             return response()->json($response, 200);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }

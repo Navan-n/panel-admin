@@ -14,6 +14,9 @@ class TagController extends Controller
     public function index(Request $request)
     {
         $tag = Tag::query();
+        if ($request->only('search') && $request->only('col')) {
+            $tag = $tag->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
         if ($request->only('sort')) {
             $tag = $tag->orderBy($request->get('sort'), $request->get('dir'));
         } else {
@@ -22,9 +25,9 @@ class TagController extends Controller
         $tag = $tag->paginate(15);
         return response()->json($tag, 200);
     }
+
     public function store(StoreTagRequest $request)
     {
-
         $input = $request->all();
 
         try {
@@ -39,48 +42,50 @@ class TagController extends Controller
 
         } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
     }
+
     public function show($id)
     {
         $tag = Tag::find($id);
         try {
-            if (!$tag==null) {
+            if (!$tag == null) {
                 $response = [
                     'success' => true,
                     'data' => new TagResource($tag),
                     'message' => 'show tags success',
                 ];
                 return response()->json($response, 200);
-            }else{
+            } else {
                 $response = [
                     'success' => false,
                     'message' => "not found",
                 ];
                 return response()->json($response, 401);
             }
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
     }
+
     public function update(StoreTagRequest $request, Tag $tag)
     {
         $input = $request->all();
@@ -100,15 +105,15 @@ class TagController extends Controller
                 'message' => 'tag success',
             ];
             return response()->json($response, 200);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }
@@ -125,15 +130,15 @@ class TagController extends Controller
                 'message' => 'delete success',
             ];
             return response()->json($response, 200);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $message = $e->getMessage();
-            var_dump('Exception Message: '. $message);
+            var_dump('Exception Message: ' . $message);
 
             $code = $e->getCode();
-            var_dump('Exception Code: '. $code);
+            var_dump('Exception Code: ' . $code);
 
             $string = $e->__toString();
-            var_dump('Exception String: '. $string);
+            var_dump('Exception String: ' . $string);
 
             exit;
         }

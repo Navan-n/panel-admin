@@ -15,6 +15,9 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
        $category = Category::query();
+        if ($request->only('search') && $request->only('col')) {
+            $category = $category->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
        if($request->only('sort')){
            $category = $category->orderBy($request->get('sort'), $request->get('dir'));
        }else{

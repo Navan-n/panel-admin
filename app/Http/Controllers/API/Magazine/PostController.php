@@ -15,6 +15,9 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $post = Post::query();
+        if ($request->only('search') && $request->only('col')) {
+            $post = $post->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
         if($request->only('sort')){
             $post = $post->orderBy($request->get('sort'), $request->get('dir'));
         }else{

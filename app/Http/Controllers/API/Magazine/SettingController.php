@@ -15,6 +15,9 @@ class SettingController extends Controller
     public function index(Request $request)
     {
        $setting = Setting::query();
+       if ($request->only('search') && $request->only('col')){
+           $setting = $setting->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+       }
        if($request->only('sort')){
            $setting = $setting->orderBy($request->get('sort') , $request->get('dir'));
        }else {

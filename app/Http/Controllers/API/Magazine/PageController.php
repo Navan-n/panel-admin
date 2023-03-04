@@ -15,6 +15,9 @@ class PageController extends Controller
     public function index(Request $request)
     {
        $page = Page::query();
+        if ($request->only('search') && $request->only('col')) {
+            $page = $page->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
        if ($request->only('sort')){
            $page = $page->orderBy($request->get('sort'), $request->get('dir'));
        }else{

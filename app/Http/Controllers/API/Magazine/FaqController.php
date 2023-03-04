@@ -15,6 +15,9 @@ class FaqController extends Controller
     public function index(Request $request)
     {
        $faq = Faq::query();
+        if ($request->only('search') && $request->only('col')) {
+            $faq = $faq->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        }
        if ($request->only('sort')){
            $faq = $faq->orderBy($request->get('sort'), $request->get('dir'));
        }else{
