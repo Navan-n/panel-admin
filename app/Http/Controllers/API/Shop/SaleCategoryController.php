@@ -1,47 +1,51 @@
 <?php
 
-namespace App\Http\Controllers\API\Magazine;
+namespace App\Http\Controllers\API\Shop;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Magazine\StoreFaqRequest;
-use App\Http\Resources\Magazine\FaqResource;
-use App\Models\Magazine\Faq;
+use App\Http\Requests\Shop\StoreSaleCategoryRequest;
+use App\Http\Resources\Shop\SaleCategoryResource;
+use App\Models\SaleCategory;
 use Exception;
 use Illuminate\Http\Request;
 
-
-class FaqController extends Controller
+class SaleCategoryController extends Controller
 {
     public function index(Request $request)
     {
-       $faq = Faq::query();
-        if ($request->only('search') && $request->only('col')) {
-            $faq = $faq->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        $sale = SaleCategory::query();
+        if ($request->only('search')&&$request->only('col')) {
+            $search = explode(' ' , $request->get('search'));
+            $col = $request->get('col');
+            $sale = $sale->where(function($q) use ($col , $search){
+                foreach ($search as $val)
+                {
+                    $q->orWhere($col , 'like' , '%' . $val . '%');
+                }
+            });
         }
-       if ($request->only('sort')){
-           $faq = $faq->orderBy($request->get('sort'), $request->get('dir'));
-       }else{
-           $faq = $faq->orderBy('id', 'ASC');
-       }
-       $faq = $faq->paginate(15);
-       return response()->json($faq, 200);
-
+        if ($request->only('sort')) {
+            $sale =$sale->orderBy($request->get('sort'), $request->get('dir'));
+        }else{
+            $sale = $sale->orderBy('id', 'ASC');
+        }
+        $sale = $sale->paginate(15);
+        return response()->json($sale, 200);
     }
-    public function store(StoreFaqRequest $request)
-    {
 
+    public function store(StoreSaleCategoryRequest $request)
+    {
         $input = $request->all();
         try {
             $input['createdBy'] = $request->user()->id;
-            $tag = Faq::create($input);
+            $sale = SaleCategory::create($input);
             $response = [
-                'success' => true,
-                'data' => new FaqResource($tag),
-                'message' => 'faq store success',
+              'success'=>true,
+              'data'=>new SaleCategoryResource($sale),
+              'message'=>'sale category create success'
             ];
-            return response()->json($response, 200);
-
-        } catch (Exception $e) {
+            return response()->json($response,200);
+        }catch (Exception $e) {
             $message = $e->getMessage();
             var_dump('Exception Message: '. $message);
 
@@ -56,19 +60,19 @@ class FaqController extends Controller
     }
     public function show($id)
     {
-        $tag = Faq::find($id);
+        $sale = SaleCategory::find($id);
         try {
-            if (!$tag==null) {
+            if (!$sale==null){
                 $response = [
                     'success' => true,
-                    'data' => new FaqResource($tag),
-                    'message' => 'faq show success',
+                    'data'=>new SaleCategoryResource($sale),
+                    'message' => 'show category success'
                 ];
                 return response()->json($response, 200);
             }else{
                 $response = [
                     'success' => false,
-                    'message' => "not found",
+                    'message' => 'category is not exist',
                 ];
                 return response()->json($response, 401);
             }
@@ -85,20 +89,14 @@ class FaqController extends Controller
             exit;
         }
     }
-    public function update(StoreFaqRequest $request, Faq $faq)
+    public function update(StoreSaleCategoryRequest $request, $id)
     {
-        $input = $request->all();
         try {
-            $faq->slug = $input['slug'];
-            $faq->title = $input['title'];
-            $faq->createdBy = $request->user()->id;
-            $faq->editedBy = $request->user()->id;
-            $faq->save();
-
+            $input = $request->all();
+            $sale = SaleCategory::where('id', $id)->update($input);
             $response = [
                 'success' => true,
-                'data' => new FaqResource($faq),
-                'message' => 'faq update success',
+                'message' => 'update category success',
             ];
             return response()->json($response, 200);
         }catch (Exception $e){
@@ -114,14 +112,14 @@ class FaqController extends Controller
             exit;
         }
     }
-    public function destroy(Faq $faq)
+    public function destroy(SaleCategory $sale)
     {
-        $faq->delete();
+        $sale->delete();
         try {
             $response = [
                 'success' => true,
-                'data' => new FaqResource($faq),
-                'message' => 'faq delete success',
+                'data' => new SaleCategoryResource($sale),
+                'message' => 'delete success',
             ];
             return response()->json($response, 200);
         }catch (Exception $e){

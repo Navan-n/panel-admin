@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\API\Magazine;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreFaqItemRequest;
-use App\Http\Resources\FaqItemResource;
-use App\Http\Resources\FaqResource;
-use App\Models\Magazine\Faq;
+use App\Http\Requests\Magazine\StoreFaqItemRequest;
+use App\Http\Resources\Magazine\FaqItemResource;
 use App\Models\Magazine\FaqItem;
 use Exception;
 use Illuminate\Http\Request;

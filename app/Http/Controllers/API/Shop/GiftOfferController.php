@@ -1,47 +1,50 @@
 <?php
 
-namespace App\Http\Controllers\API\Magazine;
+namespace App\Http\Controllers\API\Shop;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Magazine\StoreFaqRequest;
-use App\Http\Resources\Magazine\FaqResource;
-use App\Models\Magazine\Faq;
+use App\Http\Requests\Shop\StoreGiftOfferRequest;
+use App\Http\Resources\Shop\GiftOfferResource;
+use App\Models\GiftOffers;
 use Exception;
 use Illuminate\Http\Request;
 
-
-class FaqController extends Controller
+class GiftOfferController extends Controller
 {
     public function index(Request $request)
     {
-       $faq = Faq::query();
-        if ($request->only('search') && $request->only('col')) {
-            $faq = $faq->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+        $gift = GiftOffers::query();
+        if ($request->only('search')&&$request->only('col')) {
+            $search = explode(' ' , $request->get('search'));
+            $col = $request->get('col');
+            $gift = $gift->where(function($q) use ($col , $search){
+                foreach ($search as $val)
+                {
+                    $q->orWhere($col , 'like' , '%' . $val . '%');
+                }
+            });
         }
-       if ($request->only('sort')){
-           $faq = $faq->orderBy($request->get('sort'), $request->get('dir'));
-       }else{
-           $faq = $faq->orderBy('id', 'ASC');
-       }
-       $faq = $faq->paginate(15);
-       return response()->json($faq, 200);
-
+        if ($request->only('sort')) {
+            $gift =$gift->orderBy($request->get('sort'), $request->get('dir'));
+        }else{
+            $gift = $gift->orderBy('id', 'ASC');
+        }
+        $gift = $gift->paginate(15);
+        return response()->json($gift, 200);
     }
-    public function store(StoreFaqRequest $request)
+    public function store(StoreGiftOfferRequest $request)
     {
-
         $input = $request->all();
         try {
             $input['createdBy'] = $request->user()->id;
-            $tag = Faq::create($input);
+            $gift = GiftOffers::create($input);
             $response = [
-                'success' => true,
-                'data' => new FaqResource($tag),
-                'message' => 'faq store success',
+                'success'=>true,
+                'data'=>new GiftOfferResource($gift),
+                'message'=>'Gift Offers create success'
             ];
-            return response()->json($response, 200);
-
-        } catch (Exception $e) {
+            return response()->json($response,200);
+        }catch (Exception $e) {
             $message = $e->getMessage();
             var_dump('Exception Message: '. $message);
 
@@ -56,19 +59,19 @@ class FaqController extends Controller
     }
     public function show($id)
     {
-        $tag = Faq::find($id);
+        $gift = GiftOffers::find($id);
         try {
-            if (!$tag==null) {
+            if (!$gift==null){
                 $response = [
                     'success' => true,
-                    'data' => new FaqResource($tag),
-                    'message' => 'faq show success',
+                    'data'=>new GiftOfferResource($gift),
+                    'message' => 'gift offer success'
                 ];
                 return response()->json($response, 200);
             }else{
                 $response = [
                     'success' => false,
-                    'message' => "not found",
+                    'message' => 'gift offer is not exist',
                 ];
                 return response()->json($response, 401);
             }
@@ -85,20 +88,14 @@ class FaqController extends Controller
             exit;
         }
     }
-    public function update(StoreFaqRequest $request, Faq $faq)
+    public function update(StoreGiftOfferRequest $request, $id)
     {
-        $input = $request->all();
         try {
-            $faq->slug = $input['slug'];
-            $faq->title = $input['title'];
-            $faq->createdBy = $request->user()->id;
-            $faq->editedBy = $request->user()->id;
-            $faq->save();
-
+            $input = $request->all();
+            $gift = GiftOffers::where('id', $id)->update($input);
             $response = [
                 'success' => true,
-                'data' => new FaqResource($faq),
-                'message' => 'faq update success',
+                'message' => 'update gift offer success',
             ];
             return response()->json($response, 200);
         }catch (Exception $e){
@@ -114,14 +111,14 @@ class FaqController extends Controller
             exit;
         }
     }
-    public function destroy(Faq $faq)
+    public function destroy(GiftOffers $gift)
     {
-        $faq->delete();
+        $gift->delete();
         try {
             $response = [
                 'success' => true,
-                'data' => new FaqResource($faq),
-                'message' => 'faq delete success',
+                'data' => new GiftOfferResource($gift),
+                'message' => 'delete success',
             ];
             return response()->json($response, 200);
         }catch (Exception $e){

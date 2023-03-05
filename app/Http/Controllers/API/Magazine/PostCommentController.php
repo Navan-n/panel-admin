@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\API\Magazine;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePostCommentRequest;
-use App\Http\Resources\PostCommentResource;
+use App\Http\Requests\Magazine\StorePostCommentRequest;
+use App\Http\Resources\Magazine\PostCommentResource;
 use App\Models\Magazine\Comment;
-use App\Models\Magazine\Post;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PostCommentController extends Controller
 {

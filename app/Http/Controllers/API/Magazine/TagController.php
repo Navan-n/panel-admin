@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API\Magazine;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTagRequest;
-use App\Http\Resources\TagResource;
+use App\Http\Requests\Magazine\StoreTagRequest;
+use App\Http\Resources\Magazine\TagResource;
 use App\Models\Magazine\Tag;
 use Exception;
 use Illuminate\Http\Request;

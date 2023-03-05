@@ -4,12 +4,11 @@ namespace App\Http\Controllers\API\Magazine;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreSliderRequrst;
-use App\Http\Resources\SliderResource;
+use App\Http\Requests\Magazine\StoreSliderRequrst;
+use App\Http\Resources\Magazine\SliderResource;
 use App\Models\Magazine\Slider;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class SliderController extends Controller
 {

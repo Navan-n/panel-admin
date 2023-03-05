@@ -1,45 +1,49 @@
 <?php
 
-namespace App\Http\Controllers\API\Magazine;
+namespace App\Http\Controllers\API\Shop;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Magazine\StorePostRequest;
-use App\Http\Resources\Magazine\PostResource;
-use App\Models\Magazine\Post;
+use App\Http\Requests\Shop\StoreTagRequest;
+use App\Http\Resources\Shop\TagResource;
+use App\Models\Tag;
 use Exception;
 use Illuminate\Http\Request;
 
-
-class PostController extends Controller
+class TagController extends Controller
 {
     public function index(Request $request)
     {
-        $post = Post::query();
+        $tags = Tag::query();
         if ($request->only('search') && $request->only('col')) {
-            $post = $post->where($request->get('col'), 'like', '%' . $request->get('search') . '%');
+            $search = explode(' ', $request->get('search'));
+            $col = $request->get('col');
+            $tags = $tags->where(function ($q) use ($col, $search) {
+                foreach ($search as $val) {
+                    $q->orWhere($col, 'like', '%' . $val . '%');
+                }
+            });
         }
-        if($request->only('sort')){
-            $post = $post->orderBy($request->get('sort'), $request->get('dir'));
-        }else{
-            $post = $post->orderBy('id', 'ASC');
+        if ($request->only('sort')) {
+            $tags = $tags->orderBy($request->get('sort'), $request->get('dir'));
+        } else {
+            $tags = $tags->orderBy('id', 'ASC');
         }
-        $post = $post->paginate(15);
-        return response()->json($post , 200);
+        $tags = $tags->paginate(15);
+        return response()->json($tags, 200);
     }
-    public function store(StorePostRequest $request)
+    public function store(StoreTagRequest $request)
     {
-
+        $input = $request->all();
         try {
-            $input = $request->all();
             $input['createdBy'] = $request->user()->id;
-            $post = Post::create($input);
-            $post->tags()->attach($request->tag_id);
-            $post->categories()->attach($request->category_id);
+
+            $tags= Tag::create($input);
             $response = [
-                'success' => true,
-                'data' => new PostResource($post),
-                'message' => 'post store success'
+                'success'=>true,
+                'data'=>new TagResource($tags),
+                'message'=>'tag store success',
             ];
+            return response()->json($response, 200);
         }catch (Exception $e) {
             $message = $e->getMessage();
             var_dump('Exception Message: '. $message);
@@ -52,27 +56,25 @@ class PostController extends Controller
 
             exit;
         }
-        return response()->json($response, 200);
     }
     public function show($id)
     {
-        $post = Post::find($id);
+        $tags = Tag::find($id);
         try {
-            if (!$post==null){
+            if (!$tags==null){
                 $response = [
-                  'success' => true,
-                  'data' => new PostResource($post),
-                  'message' => 'show post success',
+                    'success' => true,
+                    'data'=>new TagResource($tags),
+                    'message' => 'show category success'
                 ];
                 return response()->json($response, 200);
             }else{
                 $response = [
                     'success' => false,
-                    'message' => "not found",
+                    'message' => 'category is not exist',
                 ];
                 return response()->json($response, 401);
             }
-
         }catch (Exception $e){
             $message = $e->getMessage();
             var_dump('Exception Message: '. $message);
@@ -86,30 +88,14 @@ class PostController extends Controller
             exit;
         }
     }
-    public function update(StorePostRequest $request, Post $post)
+    public function update(StoreTagRequest $request, $id)
     {
-        $input = $request->all();
         try {
-            $post->title = $input['title'];
-            $post->meta_title = $input['meta_title'];
-            $post->meta_desc = $input['meta_desc'];
-            $post->abstracted = $input['abstracted'];
-            $post->body = $input['body'];
-            $post->slug = $input['slug'];
-            $post->source = $input['source'];
-            $post->source_link= $input['source_link'];
-            $post->chief_select = $input['chief_select'];
-            $post->embed = $input['embed'];
-            $post->alt = $input['alt'];
-            $post->type = $input['type'];
-            $post->createdBy = $request->user()->id;
-            $post->editedBy = $request->user()->id;
-            $post->save();
-
+            $input = $request->all();
+            $tags = Tag::where('id', $id)->update($input);
             $response = [
                 'success' => true,
-                'data' => new PostResource($post),
-                'message' => 'tag success',
+                'message' => 'update category success',
             ];
             return response()->json($response, 200);
         }catch (Exception $e){
@@ -125,13 +111,13 @@ class PostController extends Controller
             exit;
         }
     }
-    public function desttoy(Post $post)
+    public function destroy(Tag $tag)
     {
-        $post->delete();
+        $tag->delete();
         try {
             $response = [
                 'success' => true,
-                'data' => new PostResource($post),
+                'data' => new TagResource($tag),
                 'message' => 'delete success',
             ];
             return response()->json($response, 200);

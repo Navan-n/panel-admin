@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\API\Magazine;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreSettingRequrst;
-use App\Http\Resources\SettingResource;
+use App\Http\Requests\Magazine\StoreSettingRequrst;
+use App\Http\Resources\Magazine\SettingResource;
 use App\Models\Magazine\Setting;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class SettingController extends Controller
 {

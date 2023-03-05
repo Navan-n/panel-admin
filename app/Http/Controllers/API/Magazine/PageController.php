@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\API\Magazine;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePageRequrst;
-use App\Http\Resources\PageResource;
+use App\Http\Requests\Magazine\StorePageRequrst;
+use App\Http\Resources\Magazine\PageResource;
 use App\Models\Magazine\Page;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class PageController extends Controller
 {

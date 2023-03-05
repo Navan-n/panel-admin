@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API\Magazine;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreBannerRequest;
-use App\Http\Resources\BannerResource;
+use App\Http\Requests\Magazine\StoreBannerRequest;
+use App\Http\Resources\Magazine\BannerResource;
 use App\Models\Magazine\Banner;
 use Exception;
 use Illuminate\Http\Request;

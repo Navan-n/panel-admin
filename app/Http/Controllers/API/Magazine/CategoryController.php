@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API\Magazine;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Resources\CategoryResource;
+use App\Http\Requests\Magazine\StoreCategoryRequest;
+use App\Http\Resources\Magazine\CategoryResource;
 use App\Models\Magazine\Category;
 use Exception;
 use Illuminate\Http\Request;
